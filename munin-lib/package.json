@@ -4,7 +4,7 @@
   "description": "An exercise in replicating in-memory databases like redis",
   "main": "index.js",
   "scripts": {
-    "test": "ava"
+    "test": "ava tests/"
   },
   "author": "Diogo Ribeiro",
   "license": "ISC",

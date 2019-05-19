@@ -1,3 +1,5 @@
+const errors = require('./munin-errors.js');
+
 const muninLib = (function muninLib() {
     const ctor = function() {
         this.hashStorage = new Map();
@@ -12,7 +14,11 @@ const muninLib = (function muninLib() {
     };
 
     ctor.prototype.del = function del(key) {
-        return this.hashStorage.delete(key);
+        if (this.hashStorage.has(key)) {
+            return this.hashStorage.delete(key);
+        } else {
+            throw new errors.CannotDeleteInexistentKey(key);
+        }
     };
 
     return ctor;

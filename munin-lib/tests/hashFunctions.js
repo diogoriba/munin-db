@@ -29,3 +29,9 @@ test('del appropriately removes a key', t => {
     const result2 = t.context.db.get(key);
     t.is(result2, undefined);
 });
+
+test('del can\'t remove a non-existent key', t => {
+    t.throws(() => {
+        t.context.db.del(key);
+    });
+});

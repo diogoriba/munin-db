@@ -11,6 +11,10 @@ const muninLib = (function muninLib() {
         return this.hashStorage.set(key, value);
     };
 
+    ctor.prototype.del = function del(key) {
+        return this.hashStorage.delete(key);
+    };
+
     return ctor;
 }());
 

@@ -7,6 +7,10 @@ const muninLib = (function muninLib() {
         return this.hashStorage.get(key);
     };
 
+    ctor.prototype.set = function set(key, value) {
+        return this.hashStorage.set(key, value);
+    };
+
     return ctor;
 }());
 

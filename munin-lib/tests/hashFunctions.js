@@ -41,3 +41,19 @@ test.serial('dbsize returns correct number of keys', t => {
     const result2 = t.context.db.dbsize();
     t.is(result2, 1);
 });
+
+test.serial('incr increases the value of a key by 1', t => {
+    t.context.db.set(key, 10);
+    const result = t.context.db.incr(key);
+    t.is(result, 11);
+    const getResult = t.context.db.get(key);
+    t.is(getResult, 11);
+});
+
+test.serial('incr fails to increase the value of a key for which value is not a number', t => {
+    t.context.db.set(key, value);
+    const result = t.context.db.incr(key);
+    t.is(result, t.context.db.NIL);
+    const getResult = t.context.db.get(key);
+    t.is(getResult, value);
+});

@@ -40,6 +40,20 @@ const Munin = (function muninLib() {
         return this.hashStorage.size;
     };
 
+    ctor.prototype.incr = function incr(key) {
+        let value = NIL;
+        if (this.hashStorage.has(key)) {
+            value = this.get(key);
+            if (isNaN(value)) {
+                return NIL;
+            } else {
+                const tempValue = value + 1;
+                this.set(key, tempValue);
+                return tempValue;
+            }
+        }
+    };
+
     return ctor;
 }());
 

@@ -1,4 +1,5 @@
 const errors = require('./munin-errors.js');
+const SortedSet = require('redis-sorted-set');
 
 const Munin = (function muninLib() {
     const ctor = function() {
@@ -51,6 +52,23 @@ const Munin = (function muninLib() {
                 this.set(key, tempValue);
                 return tempValue;
             }
+        }
+    };
+
+    ctor.prototype.zadd = function zadd(key, score, member) {
+        let sortedSet;
+        if (!this.hashStorage.has(key)) {
+            sortedSet = new SortedSet();
+            this.set(key, sortedSet);
+        } else {
+            sortedSet = this.get(key);
+        }
+
+        if (!(sortedSet instanceof SortedSet)) {
+            return 0;
+        } else {
+            sortedSet.add(member, score);
+            return 1;
         }
     };
 

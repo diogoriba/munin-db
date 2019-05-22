@@ -72,6 +72,18 @@ const Munin = (function muninLib() {
         }
     };
 
+    ctor.prototype.zcard = function zcard(key) {
+        let sortedSet;
+        if (this.hashStorage.has(key)) {
+            const set = this.hashStorage.get(key);
+            if (set instanceof SortedSet) {
+                return set.card();
+            }
+        }
+
+        return 0;
+    };
+
     return ctor;
 }());
 

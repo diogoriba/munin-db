@@ -42,26 +42,21 @@ const Munin = (function muninLib() {
     };
 
     ctor.prototype.incr = function incr(key) {
-        let value = NIL;
-        if (this.hashStorage.has(key)) {
-            value = this.get(key);
-            if (isNaN(value)) {
-                return NIL;
-            } else {
-                const tempValue = value + 1;
-                this.set(key, tempValue);
-                return tempValue;
-            }
+        let value = this.get(key);
+        if (value !== NIL && !isNaN(value)) {
+            const tempValue = value + 1;
+            this.set(key, tempValue);
+            return tempValue;
+        } else {
+            return NIL;
         }
     };
 
     ctor.prototype.zadd = function zadd(key, score, member) {
-        let sortedSet;
-        if (!this.hashStorage.has(key)) {
+        let sortedSet = this.get(key);
+        if (sortedSet === NIL) {
             sortedSet = new SortedSet();
             this.set(key, sortedSet);
-        } else {
-            sortedSet = this.get(key);
         }
 
         if (!(sortedSet instanceof SortedSet)) {
@@ -73,16 +68,31 @@ const Munin = (function muninLib() {
     };
 
     ctor.prototype.zcard = function zcard(key) {
-        let sortedSet;
-        if (this.hashStorage.has(key)) {
-            const set = this.hashStorage.get(key);
-            if (set instanceof SortedSet) {
-                return set.card();
-            }
+        const sortedSet = this.get(key);
+        if (sortedSet !== NIL && sortedSet instanceof SortedSet) {
+            return sortedSet.card();
         }
 
         return 0;
     };
+
+    ctor.prototype.zrank = function zrank(key, member) {
+        let sortedSet = this.get(key);
+        if (sortedSet !== NIL && sortedSet instanceof SortedSet) {
+            return sortedSet.rank(member);
+        }
+
+        return NIL;
+    };
+
+    ctor.prototype.zrange = function zrange(key, start, stop) {
+        let sortedSet = this.get(key);
+        if (sortedSet !== NIL && sortedSet instanceof SortedSet) {
+            return sortedSet.range(start, stop);
+        }
+
+        return NIL;
+    }
 
     return ctor;
 }());

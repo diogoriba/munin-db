@@ -45,3 +45,26 @@ test.serial('zcard returns 0 for a key that is set to undefined', t => {
     const result = t.context.db.zcard(key);
     t.is(result, 0);
 });
+
+test.serial('zrank tracks the rank of a member in a set', t => {
+    t.context.db.zadd(key, 1, 'test-member-1');
+    t.context.db.zadd(key, 2, 'test-member-2');
+    t.context.db.zadd(key, 3, 'test-member-3');
+
+    const result = t.context.db.zrank(key, 'test-member-3');
+    t.is(result, 2);
+});
+
+test.serial('zrange yields the list of members within a score range', t => {
+    t.context.db.zadd(key, 5, 'test-member-1');
+    t.context.db.zadd(key, 2, 'test-member-2');
+    t.context.db.zadd(key, 3, 'test-member-3');
+    t.context.db.zadd(key, 1, 'test-member-4');
+    t.context.db.zadd(key, 4, 'test-member-5');
+
+    const result = t.context.db.zrange(key, 2, 4);
+    t.is(result.length, 3);
+    t.is(result[0], 'test-member-3');
+    t.is(result[1], 'test-member-5');
+    t.is(result[2], 'test-member-1');
+});

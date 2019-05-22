@@ -36,6 +36,10 @@ const Munin = (function muninLib() {
         return result;
     };
 
+    ctor.prototype.dbsize = function dbsize() {
+        return this.hashStorage.size;
+    };
+
     return ctor;
 }());
 

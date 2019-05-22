@@ -2,7 +2,6 @@ import test from 'ava';
 import Munin from '../src/munin';
 
 test.beforeEach(t => {
-    console.log('creating new instance of db');
     t.context.db = new Munin();
 });
 
@@ -21,8 +20,6 @@ test.serial('set appropriately changes the value of a key', t => {
 });
 
 test.serial('del appropriately removes a key', t => {
-    const result0 = t.context.db.get(key);
-    t.is(result0, t.context.db.NIL);
     t.context.db.set(key, value);
     const result1 = t.context.db.get(key);
     t.is(result1, value);
@@ -35,4 +32,12 @@ test.serial('del appropriately removes a key', t => {
 test.serial('del can\'t remove a non-existent key', t => {
     const delResult = t.context.db.del(key);
     t.is(delResult, 0);
+});
+
+test.serial('dbsize returns correct number of keys', t => {
+    const result1 = t.context.db.dbsize();
+    t.is(result1, 0);
+    t.context.db.set(key, value);
+    const result2 = t.context.db.dbsize();
+    t.is(result2, 1);
 });

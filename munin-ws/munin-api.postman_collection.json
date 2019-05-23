@@ -1,0 +1,162 @@
+{
+	"info": {
+		"_postman_id": "20b0025d-61f3-406e-b5f6-97ab3ca6e0d6",
+		"name": "munin-api",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "GET key",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://{{hostname}}:{{port}}/v{{apiVersion}}/my-key",
+					"protocol": "http",
+					"host": [
+						"{{hostname}}"
+					],
+					"port": "{{port}}",
+					"path": [
+						"v{{apiVersion}}",
+						"my-key"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "SET key value",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"value\": 10\n}"
+				},
+				"url": {
+					"raw": "http://{{hostname}}:{{port}}/v{{apiVersion}}/my-key",
+					"protocol": "http",
+					"host": [
+						"{{hostname}}"
+					],
+					"port": "{{port}}",
+					"path": [
+						"v{{apiVersion}}",
+						"my-key"
+					],
+					"query": [
+						{
+							"key": "",
+							"value": ""
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "SET key value expiration",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"value\": 11,\n\t\"expiration\": 5\n}"
+				},
+				"url": {
+					"raw": "http://{{hostname}}:{{port}}/v{{apiVersion}}/my-key",
+					"protocol": "http",
+					"host": [
+						"{{hostname}}"
+					],
+					"port": "{{port}}",
+					"path": [
+						"v{{apiVersion}}",
+						"my-key"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "DEL key",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://{{hostname}}:{{port}}/v{{apiVersion}}/my-key",
+					"protocol": "http",
+					"host": [
+						"{{hostname}}"
+					],
+					"port": "{{port}}",
+					"path": [
+						"v{{apiVersion}}",
+						"my-key"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"id": "af54ae94-1d1e-43b8-844e-5c4697f99eb1",
+			"key": "hostname",
+			"value": "localhost",
+			"type": "string"
+		},
+		{
+			"id": "c264c032-b67f-425e-97be-94b601c61707",
+			"key": "port",
+			"value": "8080",
+			"type": "string"
+		},
+		{
+			"id": "30b4a55c-91b8-41c3-9d44-b02b28d7e784",
+			"key": "apiVersion",
+			"value": "1.0",
+			"type": "string"
+		}
+	]
+}

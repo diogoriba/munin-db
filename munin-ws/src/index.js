@@ -1,4 +1,5 @@
 const express = require('express');
+const bodyParser = require('body-parser');
 const { Munin, parserBuilder } = require('munin-lib');
 
 const app = express();
@@ -22,9 +23,30 @@ const handlers = {
 }
 
 const parser = parserBuilder(handlers);
+
+app.use(bodyParser.json());
+
 app.get('/', (request, response) => {
     const commandString = request.query.cmd;
     parser.parse(commandString, { request, response, db });
+});
+
+app.get('/v1.0/:key', (request, response) => {
+    const result = db.get(request.params.key);
+    console.log(`GET ${request.params.key} = ${result}`);
+    response.json(result);
+});
+
+app.put('/v1.0/:key', (request, response) => {
+    const result = db.set(request.params.key, request.body.value, request.body.expiration); 
+    console.log(`SET ${request.params.key} ${request.body.value} ${request.body.expiration} = ${result}`);
+    response.json(result);
+});
+
+app.delete('/v1.0/:key', (request, response) => {
+    const result = db.del(request.params.key);
+    console.log(`DELETE ${request.params.key} = ${result}`);
+    response.json(result);
 });
 
 app.listen(8080, () => {

@@ -7,7 +7,7 @@ const parserBuilder = function (handlers) {
         handler: handlers.get
     })
     .command({
-        command: 'SET <key> <value> [expiration]',
+        command: 'SET <key> <value> [EX] [expiration]',
         handler: handlers.set
     })
     .command({

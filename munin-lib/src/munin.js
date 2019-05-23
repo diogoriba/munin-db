@@ -57,7 +57,10 @@ const MuninSelfEvalFunction = (function muninLib() {
 
     Munin.prototype.incr = function incr(key) {
         let value = this.get(key);
-        if (value !== NIL && !(isNaN(value))) {
+        if (value == NIL) {
+            value = 0;
+        }
+        if (!(isNaN(value))) {
             const tempValue = value + 1;
             this.set(key, tempValue);
             return tempValue;

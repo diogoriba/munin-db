@@ -1,4 +1,3 @@
-const errors = require('./munin-errors.js');
 const SortedSet = require('redis-sorted-set');
 const Moment = require('moment');
 

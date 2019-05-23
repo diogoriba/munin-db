@@ -8,6 +8,7 @@ const db = new Munin();
 const outputDecorator = (fn) => {
     return (context) => {
         const result = fn(context);
+        console.log(`RAW COMMAND '${context.commandString}' = ${result}`);
         context.response.send(result);
     }
 };
@@ -29,10 +30,10 @@ app.use(bodyParser.json());
 
 app.get('/', (request, response) => {
     const commandString = request.query.cmd;
-    parser.parse(commandString, { request, response, db });
+    parser.parse(commandString, { commandString, request, response, db });
 });
 
-app.get('/v1.0/:key/:member?', range({ accept: 'items', limit: '1000' }), (request, response) => {
+app.get('/v1.0/:key/:member?', range({ accept: 'score', limit: '1000' }), (request, response) => {
     if (request.params.member) {
         const result = db.zrank(request.params.key, request.params.member);
         console.log(`ZRANK ${request.params.key} ${request.params.member} = ${result}`);
@@ -44,12 +45,12 @@ app.get('/v1.0/:key/:member?', range({ accept: 'items', limit: '1000' }), (reque
             last: response.range.last
         });
 
-        if (request.range.unit == 'items' && request.range.first < request.range.last) {
+        if (request.range.unit == 'score' && request.range.first < request.range.last) {
             const result = db.zrange(request.params.key, request.range.first, request.range.last);
             console.log(`ZRANGE ${request.params.key} ${request.range.first} ${request.range.last} = ${result}`);
             response.json(result);
         } else {
-            response.status(416).send('Provided range is not satisfiable. Please use "items" as a unit and use a valid range.');
+            response.status(416).send('Provided range is not satisfiable. Please use "score" as a unit and use a valid range.');
         }
     } else {
         const result = db.get(request.params.key);

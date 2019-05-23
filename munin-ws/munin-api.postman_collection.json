@@ -65,12 +65,6 @@
 					"path": [
 						"v{{apiVersion}}",
 						"my-key"
-					],
-					"query": [
-						{
-							"key": "",
-							"value": ""
-						}
 					]
 				}
 			},
@@ -137,23 +131,101 @@
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "ZADD key score member",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"score\": 10,\n\t\"member\": \"test-member\"\n}"
+				},
+				"url": {
+					"raw": "http://{{hostname}}:{{port}}/v{{apiVersion}}/my-key",
+					"protocol": "http",
+					"host": [
+						"{{hostname}}"
+					],
+					"port": "{{port}}",
+					"path": [
+						"v{{apiVersion}}",
+						"my-key"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "ZRANK key member",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://{{hostname}}:{{port}}/v{{apiVersion}}/my-key/test-member",
+					"protocol": "http",
+					"host": [
+						"{{hostname}}"
+					],
+					"port": "{{port}}",
+					"path": [
+						"v{{apiVersion}}",
+						"my-key",
+						"test-member"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "ZRANGE key start stop",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Range",
+						"value": "items=0-100",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://{{hostname}}:{{port}}/v{{apiVersion}}/my-key",
+					"protocol": "http",
+					"host": [
+						"{{hostname}}"
+					],
+					"port": "{{port}}",
+					"path": [
+						"v{{apiVersion}}",
+						"my-key"
+					]
+				}
+			},
+			"response": []
 		}
 	],
 	"variable": [
 		{
-			"id": "af54ae94-1d1e-43b8-844e-5c4697f99eb1",
+			"id": "4c3704a5-3b0e-47e4-94bb-df24c55b65fd",
 			"key": "hostname",
 			"value": "localhost",
 			"type": "string"
 		},
 		{
-			"id": "c264c032-b67f-425e-97be-94b601c61707",
+			"id": "dc2039df-f41b-4689-92c5-96692575cdb0",
 			"key": "port",
 			"value": "8080",
 			"type": "string"
 		},
 		{
-			"id": "30b4a55c-91b8-41c3-9d44-b02b28d7e784",
+			"id": "b926d5bc-9c32-4ac0-8465-ef4f810bbb09",
 			"key": "apiVersion",
 			"value": "1.0",
 			"type": "string"

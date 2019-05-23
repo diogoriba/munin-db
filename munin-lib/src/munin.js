@@ -2,8 +2,8 @@ const errors = require('./munin-errors.js');
 const SortedSet = require('redis-sorted-set');
 const Moment = require('moment');
 
-const Munin = (function muninLib() {
-    const ctor = function() {
+const MuninSelfEvalFunction = (function muninLib() {
+    const Munin = function() {
         this.hashStorage = new Map();
     };
 
@@ -11,10 +11,11 @@ const Munin = (function muninLib() {
     const NIL = "(nil)";
 
     // public
-    ctor.prototype.OK = OK;
-    ctor.prototype.NIL = NIL;
+    Munin.prototype.OK = OK;
+    Munin.prototype.NIL = NIL;
+    Munin.SortedSet = SortedSet;
 
-    ctor.prototype.get = function get(key) {
+    Munin.prototype.get = function get(key) {
         if (this.hashStorage.has(key)) { 
             const entry = this.hashStorage.get(key);
             // checking for expiration on get is slightly taxing on the get method.
@@ -31,7 +32,7 @@ const Munin = (function muninLib() {
         return NIL;
     };
 
-    ctor.prototype.set = function set(key, value, expiration) {
+    Munin.prototype.set = function set(key, value, expiration) {
         const entry = { value };
         if (expiration > 0) {
             entry.expiration = Moment().add(expiration, 'seconds');
@@ -40,7 +41,7 @@ const Munin = (function muninLib() {
         return OK;
     };
 
-    ctor.prototype.del = function del(...keys) {
+    Munin.prototype.del = function del(...keys) {
         const result = keys.reduce((accumulator, key) => {
             if (this.hashStorage.delete(key)) {
                 return accumulator + 1;
@@ -51,11 +52,11 @@ const Munin = (function muninLib() {
         return result;
     };
 
-    ctor.prototype.dbsize = function dbsize() {
+    Munin.prototype.dbsize = function dbsize() {
         return this.hashStorage.size;
     };
 
-    ctor.prototype.incr = function incr(key) {
+    Munin.prototype.incr = function incr(key) {
         let value = this.get(key);
         if (value !== NIL && !(isNaN(value))) {
             const tempValue = value + 1;
@@ -66,7 +67,7 @@ const Munin = (function muninLib() {
         }
     };
 
-    ctor.prototype.zadd = function zadd(key, score, member) {
+    Munin.prototype.zadd = function zadd(key, score, member) {
         let sortedSet = this.get(key);
         if (sortedSet === NIL) {
             sortedSet = new SortedSet();
@@ -81,7 +82,7 @@ const Munin = (function muninLib() {
         }
     };
 
-    ctor.prototype.zcard = function zcard(key) {
+    Munin.prototype.zcard = function zcard(key) {
         const sortedSet = this.get(key);
         if (sortedSet !== NIL && sortedSet instanceof SortedSet) {
             return sortedSet.card();
@@ -90,7 +91,7 @@ const Munin = (function muninLib() {
         return 0;
     };
 
-    ctor.prototype.zrank = function zrank(key, member) {
+    Munin.prototype.zrank = function zrank(key, member) {
         let sortedSet = this.get(key);
         if (sortedSet !== NIL && sortedSet instanceof SortedSet) {
             return sortedSet.rank(member);
@@ -99,7 +100,7 @@ const Munin = (function muninLib() {
         return NIL;
     };
 
-    ctor.prototype.zrange = function zrange(key, start, stop) {
+    Munin.prototype.zrange = function zrange(key, start, stop) {
         let sortedSet = this.get(key);
         if (sortedSet !== NIL && sortedSet instanceof SortedSet) {
             return sortedSet.range(start, stop);
@@ -108,7 +109,7 @@ const Munin = (function muninLib() {
         return NIL;
     }
 
-    return ctor;
+    return Munin;
 }());
 
-module.exports = Munin;
+module.exports = MuninSelfEvalFunction;

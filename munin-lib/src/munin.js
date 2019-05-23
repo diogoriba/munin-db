@@ -1,5 +1,6 @@
 const errors = require('./munin-errors.js');
 const SortedSet = require('redis-sorted-set');
+const Moment = require('moment');
 
 const Munin = (function muninLib() {
     const ctor = function() {
@@ -15,14 +16,27 @@ const Munin = (function muninLib() {
 
     ctor.prototype.get = function get(key) {
         if (this.hashStorage.has(key)) { 
-            return this.hashStorage.get(key);
-        } else {
-            return NIL;
+            const entry = this.hashStorage.get(key);
+            // checking for expiration on get is slightly taxing on the get method.
+            // alternatively, it could be done by adding a function to the event loop in the set method,
+            // i.e. setTimeout(() => { this.del(key) }, expiration * 1000);
+            // but it would clog the event queue, which is undesirable for services that may deal
+            // with a large number of requests already.
+            if (!entry.expiration || Moment().isBefore(entry.expiration)) {
+                return entry.value;
+            } else {
+                this.del(key);
+            }
         }
+        return NIL;
     };
 
-    ctor.prototype.set = function set(key, value) {
-        this.hashStorage.set(key, value);
+    ctor.prototype.set = function set(key, value, expiration) {
+        const entry = { value };
+        if (expiration > 0) {
+            entry.expiration = Moment().add(expiration, 'seconds');
+        }
+        this.hashStorage.set(key, entry);
         return OK;
     };
 
@@ -43,7 +57,7 @@ const Munin = (function muninLib() {
 
     ctor.prototype.incr = function incr(key) {
         let value = this.get(key);
-        if (value !== NIL && !isNaN(value)) {
+        if (value !== NIL && !(isNaN(value))) {
             const tempValue = value + 1;
             this.set(key, tempValue);
             return tempValue;

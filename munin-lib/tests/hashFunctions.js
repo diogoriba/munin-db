@@ -14,9 +14,23 @@ test.serial('get returns nil when key is not set', t => {
 });
 
 test.serial('set appropriately changes the value of a key', t => {
-    t.context.db.set(key, value);
+    const setResult = t.context.db.set(key, value);
+    t.is(setResult, t.context.db.OK);
     const result = t.context.db.get(key);
     t.is(result, value);
+});
+
+test.serial.cb('set will expire a key', t => {
+    t.plan(2);
+    t.context.db.set(key, value, 1);
+    const result1 = t.context.db.get(key);
+    t.is(result1, value);
+
+    setTimeout(() => {
+        const result2 = t.context.db.get(key);
+        t.is(result2, t.context.db.NIL);
+        t.end();
+    }, 1000);
 });
 
 test.serial('del appropriately removes a key', t => {
@@ -43,7 +57,8 @@ test.serial('dbsize returns correct number of keys', t => {
 });
 
 test.serial('incr increases the value of a key by 1', t => {
-    t.context.db.set(key, 10);
+    const setResult = t.context.db.set(key, 10);
+    t.is(setResult, t.context.db.OK);
     const result = t.context.db.incr(key);
     t.is(result, 11);
     const getResult = t.context.db.get(key);

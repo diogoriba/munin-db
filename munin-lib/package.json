@@ -12,6 +12,7 @@
     "ava": "^1.4.1"
   },
   "dependencies": {
+    "moment": "^2.24.0",
     "redis-sorted-set": "^2.0.0"
   }
 }

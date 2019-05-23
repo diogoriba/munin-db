@@ -2,7 +2,7 @@
   "name": "munin-lib",
   "version": "1.0.0",
   "description": "An exercise in replicating in-memory databases like redis",
-  "main": "index.js",
+  "main": "src/munin.js",
   "scripts": {
     "test": "ava tests/"
   },

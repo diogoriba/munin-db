@@ -52,6 +52,10 @@ app.get('/v1.0/:key/:member?', range({ accept: 'score', limit: '1000' }), (reque
         } else {
             response.status(416).send('Provided range is not satisfiable. Please use "score" as a unit and use a valid range.');
         }
+    } else if (request.query.count) {
+        const result = db.zcard(request.params.key);
+        console.log(`ZCARD ${request.params.key} = ${result}`);
+        response.json(result);
     } else {
         const result = db.get(request.params.key);
         if (result instanceof Munin.SortedSet) {
@@ -72,6 +76,10 @@ app.put('/v1.0/:key', (request, response) => {
         const result = db.set(request.params.key, request.body.value, request.body.expiration); 
         console.log(`SET ${request.params.key} ${request.body.value} ${request.body.expiration} = ${result}`);
         response.json(result);
+    } else if (request.body.incr) {
+        const result = db.incr(request.params.key);
+        console.log(`INCR ${request.params.key} = ${result}`);
+        response.json(result);
     } else {
         response.status(400).send('A PUT request should either include "value" in its body for \
             setting the value of a key or it should include "score" and "member" for manipulating sets');
@@ -83,6 +91,16 @@ app.delete('/v1.0/:key', (request, response) => {
     console.log(`DELETE ${request.params.key} = ${result}`);
     response.json(result);
 });
+
+app.get('/v1.0', (request, response) => {
+    if (request.query.count) {
+        const result = db.dbsize();
+        console.log(`DBSIZE = ${result}`);
+        response.json(result);
+    } else {
+        response.status(404).send();
+    }
+})
 
 app.listen(8080, () => {
     console.log('Listening on port 8080');

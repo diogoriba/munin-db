@@ -7,6 +7,18 @@
 	"item": [
 		{
 			"name": "GET key",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "93e0ecc2-d5c9-49fe-a613-dc37fa14fcb3",
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
 			"protocolProfileBehavior": {
 				"disableBodyPruning": true
 			},
@@ -35,7 +47,8 @@
 						"v{{apiVersion}}",
 						"my-key"
 					]
-				}
+				},
+				"description": "Gets the value of \"key\" in the database.\nIf \"key\" does not exist in the database or was deleted, this command will return \"(nil)\".\nIf \"key\" is a sorted set, this command will fail with HTTP 500."
 			},
 			"response": []
 		},
@@ -66,12 +79,57 @@
 						"v{{apiVersion}}",
 						"my-key"
 					]
-				}
+				},
+				"description": "Sets \"value\" to \"key\" in the database.\nThis replaces any previous value a key had, including sorted sets.\nThis command will return \"OK\" when set is performed successfully.\nThis command will fail with HTTP 400 if value is not specified."
 			},
 			"response": []
 		},
 		{
 			"name": "SET key value expiration",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"value\": 11,\n\t\"expiration\": 5\n}"
+				},
+				"url": {
+					"raw": "http://{{hostname}}:{{port}}/v{{apiVersion}}/my-key",
+					"protocol": "http",
+					"host": [
+						"{{hostname}}"
+					],
+					"port": "{{port}}",
+					"path": [
+						"v{{apiVersion}}",
+						"my-key"
+					]
+				},
+				"description": "Sets \"value\" to \"key\" in the database.\nThis replaces any previous value a key had, including sorted sets.\nThis command will return \"OK\" when set is performed successfully.\nThis command will fail with HTTP 400 if value is not specified.\n\nThe \"expiration\" parameter will cause the key to be deleted after that many seconds have elapsed since it was set.\nCalling this operation on the same key with another expiration value will reset any active countdowns and set a new expiration time for that key."
+			},
+			"response": []
+		},
+		{
+			"name": "INCR key",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "8244bdcc-761a-40f0-9e9c-c51d6cf0146b",
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
 			"request": {
 				"method": "PUT",
 				"header": [
@@ -84,7 +142,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n\t\"value\": 11,\n\t\"expiration\": 5\n}"
+					"raw": "{\n\t\"incr\": true\n}"
 				},
 				"url": {
 					"raw": "http://{{hostname}}:{{port}}/v{{apiVersion}}/my-key",
@@ -128,7 +186,8 @@
 						"v{{apiVersion}}",
 						"my-key"
 					]
-				}
+				},
+				"description": "Deletes a key from the database."
 			},
 			"response": []
 		},
@@ -159,15 +218,30 @@
 						"v{{apiVersion}}",
 						"my-key"
 					]
-				}
+				},
+				"description": "Creates a sorted set in \"key\" if it doesn't have one already. Then it adds a member with a given score to that set. This request will return the number of members added to the set if it succeeds.\n\nIf invoked without specifying \"member\" and \"score\", this operation will fail with HTTP 400."
 			},
 			"response": []
 		},
 		{
 			"name": "ZRANK key member",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
 			"request": {
 				"method": "GET",
-				"header": [],
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
 				"url": {
 					"raw": "http://{{hostname}}:{{port}}/v{{apiVersion}}/my-key/test-member",
 					"protocol": "http",
@@ -180,21 +254,36 @@
 						"my-key",
 						"test-member"
 					]
-				}
+				},
+				"description": "Returns the rank of a member in a sorted set.\n\nSets are sorted by ascending score, so the lower the rank, the earlier in the set a member is. 0 would be the lowest possible ranking of a member in the set.\n\nThis operation will return \"(nil)\" if member is not in set or if key does not contain a set."
 			},
 			"response": []
 		},
 		{
 			"name": "ZRANGE key start stop",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
 			"request": {
 				"method": "GET",
 				"header": [
 					{
 						"key": "Range",
-						"value": "items=0-100",
+						"value": "score=0-100",
+						"description": "Range of scores to look for. Lower limit should be less than upper limit. Unit should always be \"score\".",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
 						"type": "text"
 					}
 				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
 				"url": {
 					"raw": "http://{{hostname}}:{{port}}/v{{apiVersion}}/my-key",
 					"protocol": "http",
@@ -206,26 +295,105 @@
 						"v{{apiVersion}}",
 						"my-key"
 					]
+				},
+				"description": "Returns an array of members in a set that have a score between a range.\n\nThis method will fail with HTTP 416 if specified range is invalid."
+			},
+			"response": []
+		},
+		{
+			"name": "ZCARD key",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://{{hostname}}:{{port}}/v{{apiVersion}}/?count=true",
+					"protocol": "http",
+					"host": [
+						"{{hostname}}"
+					],
+					"port": "{{port}}",
+					"path": [
+						"v{{apiVersion}}",
+						""
+					],
+					"query": [
+						{
+							"key": "count",
+							"value": "true"
+						}
+					]
 				}
+			},
+			"response": []
+		},
+		{
+			"name": "DBSIZE",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://{{hostname}}:{{port}}/v{{apiVersion}}/?count=true",
+					"protocol": "http",
+					"host": [
+						"{{hostname}}"
+					],
+					"port": "{{port}}",
+					"path": [
+						"v{{apiVersion}}",
+						""
+					],
+					"query": [
+						{
+							"key": "count",
+							"value": "true"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Run Command",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://{{hostname}}:{{port}}/?cmd=GET my-key",
+					"protocol": "http",
+					"host": [
+						"{{hostname}}"
+					],
+					"port": "{{port}}",
+					"path": [
+						""
+					],
+					"query": [
+						{
+							"key": "cmd",
+							"value": "GET my-key"
+						}
+					]
+				},
+				"description": "Runs a text command as if you were interacting with Munin-cli. Look up Munin-cli documentation for available commands."
 			},
 			"response": []
 		}
 	],
 	"variable": [
 		{
-			"id": "4c3704a5-3b0e-47e4-94bb-df24c55b65fd",
+			"id": "de1ed2e2-c7a2-4507-a0dc-daa5e73b3918",
 			"key": "hostname",
 			"value": "localhost",
 			"type": "string"
 		},
 		{
-			"id": "dc2039df-f41b-4689-92c5-96692575cdb0",
+			"id": "f59e5460-9e99-4e5e-8069-366b085a82b8",
 			"key": "port",
 			"value": "8080",
 			"type": "string"
 		},
 		{
-			"id": "b926d5bc-9c32-4ac0-8465-ef4f810bbb09",
+			"id": "44c90304-7c9d-4f33-9cce-fdfb21d21faa",
 			"key": "apiVersion",
 			"value": "1.0",
 			"type": "string"

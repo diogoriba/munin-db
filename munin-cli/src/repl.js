@@ -1,66 +1,26 @@
-const Munin = require('munin-lib');
+const { Munin, parserBuilder } = require('munin-lib');
 const repl = require('repl');
-const yargs = require('yargs');
 
 const db = new Munin();
+const outputDecorator = (fn) => {
+    return function () {
+        console.log(fn(...arguments));
+    };
+};
 
-const parser = 
-    yargs
-    .command({
-        command: 'GET <key>',
-        handler: (context) => {
-            console.log(context.db.get(context.key));
-        }
-    })
-    .command({
-        command: 'SET <key> <value>',
-        handler: (context) => {
-            console.log(context.db.set(context.key, context.value));
-        }
-    })
-    .command({
-        command: 'DEL <key>',
-        handler: (context) => {
-            console.log(context.db.del(context.key));
-        }
-    })
-    .command({
-        command: 'DBSIZE',
-        handler: (context) => {
-            console.log(context.db.dbsize());
-        }
-    })
-    .command({
-        command: 'INCR <key>',
-        handler: (context) => {
-            console.log(context.db.incr(context.key));
-        }
-    })
-    .command({
-        command: 'ZADD <key> <score> <member>',
-        handler: (context) => {
-            console.log(context.db.zadd(context.key, context.score, context.member));
-        }
-    })
-    .command({
-        command: 'ZCARD <key>',
-        handler: (context) => {
-            console.log(context.db.zcard(context.key));
-        }
-    })
-    .command({
-        command: 'ZRANK <key> <member>',
-        handler: (context) => {
-            console.log(context.db.zrank(context.key, context.member));
-        }
-    })
-    .command({
-        command: 'ZRANGE <key> <start> <stop>',
-        handler: (context) => {
-            console.log(context.db.zrange(context.key, context.start, context.stop));
-        }
-    })
-    .help('HELP');
+const handlers = {
+    get: outputDecorator((context) => context.db.get(context.key)),
+    set: outputDecorator((context) => context.db.set(context.key, context.value, context.expiration)),
+    del: outputDecorator((context) => context.db.del(context.key)),
+    dbsize: outputDecorator((context) => context.db.del(context.key)),
+    incr: outputDecorator((context) => context.db.incr(context.key)),
+    zadd: outputDecorator((context) => context.db.zadd(context.key, context.score, context.member)),
+    zcard: outputDecorator((context) => context.db.zcard(context.key)),
+    zrank: outputDecorator((context) => context.db.zrank(context.key, context.member)),
+    zrange: outputDecorator((context) => context.db.zrange(context.key, context.start, context.stop))
+}
+
+const parser = parserBuilder(handlers);
 
 const eval = function (cmd, replContext, filename, callback) {
     parser.parse(cmd, replContext, (err, a, b, output) => {

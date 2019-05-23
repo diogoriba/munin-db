@@ -2,9 +2,10 @@
   "name": "munin-cli",
   "version": "1.0.0",
   "description": "A repl interface for the munin-lib package",
-  "main": "index.js",
+  "main": "src/repl.js",
   "scripts": {
-    "test": "ava"
+    "test": "ava",
+    "start": "node src/repl.js"
   },
   "author": "Diogo Ribeiro",
   "license": "ISC",
@@ -12,7 +13,6 @@
     "ava": "^1.4.1"
   },
   "dependencies": {
-    "munin-lib": "file:../munin-lib",
-    "yargs": "^13.2.4"
+    "munin-lib": "file:../munin-lib"
   }
 }

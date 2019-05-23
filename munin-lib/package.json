@@ -2,7 +2,7 @@
   "name": "munin-lib",
   "version": "1.0.0",
   "description": "An exercise in replicating in-memory databases like redis",
-  "main": "src/munin.js",
+  "main": "index.js",
   "scripts": {
     "test": "ava tests/"
   },
@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "moment": "^2.24.0",
-    "redis-sorted-set": "^2.0.0"
+    "redis-sorted-set": "^2.0.0",
+    "yargs": "^13.2.4"
   }
 }
